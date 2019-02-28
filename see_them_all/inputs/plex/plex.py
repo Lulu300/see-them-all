@@ -30,11 +30,10 @@ class Plex(Input):
             if not show_id:
                 continue
             episode = {
-                show_id: {
-                    'show_name': video.get('grandparentTitle'),
-                    'season_number': video.get('parentIndex'),
-                    'episode_number': video.get('index')
-                }
+                'show_id': show_id,
+                'show_name': video.get('grandparentTitle'),
+                'season_number': video.get('parentIndex'),
+                'episode_number': video.get('index')
             }
             bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), episode)
 

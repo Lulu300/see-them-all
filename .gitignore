@@ -647,3 +647,4 @@ healthchecksdb
 # Custom rules
 
 *.dev.json
+tvt_token
