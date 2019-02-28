@@ -1,0 +1,27 @@
+{
+    "log": {
+        "path": "/var/log/see_them_all.log",
+        "level": "DEBUG",
+        "max_size": 1000000,
+        "backup_count": 1,
+        "show_on_console": true
+    },
+    "inputs": {
+        "plex_1": {
+            "enabled": true,
+            "type": "inputs.plex.Plex",
+            "interval": 2,
+            "url": "",
+            "token": ""
+        }
+    },
+    "outputs": {
+        "tvtime": {
+            "enabled": true,
+            "type": "outputs.tvtime.Tvtime",
+            "inputs": ["plex_1"],
+            "token_file": "tvt_token"
+        }
+    },
+    "pid_file": "/var/run/see_them_all.pid"
+}

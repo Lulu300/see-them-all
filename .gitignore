@@ -290,6 +290,7 @@ bh_unicode_properties.cache
 GitHub.sublime-settings
 
 ### VisualStudioCode ###
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -642,3 +643,7 @@ ASALocalRun/
 healthchecksdb
 
 # End of https://www.gitignore.io/api/python,pycharm+all,sublimetext,intellij+all,visualstudio,visualstudiocode
+
+# Custom rules
+
+*.dev.json
