@@ -3,14 +3,11 @@ from event_bus import EventBus
 from util.constants import bus
 
 
-# bus = EventBus()
-
-
 class Tvtime(Output):
 
     def __init__(self, config):
         self.config = config
 
-    def mark_as_watched(self, episodes):
-        print(episodes)
+    def mark_as_watched(self, episode):
+        print(episode)
         print("Mark as watched")

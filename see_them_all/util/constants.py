@@ -10,4 +10,8 @@ TVTIME_TOKEN = urljoin(TVTIME_BASEURL, '/v1/oauth/access_token')
 TVTIME_CHECKIN = urljoin(TVTIME_BASEURL, '/v1/checkin')
 TVTIME_FOLLOW = urljoin(TVTIME_BASEURL, '/v1/follow')
 
+PMS_WATCH_HISTORY = "/status/sessions/history/all"
+
+EB_NEW_SEEN_EP = 'new:seen:episodes'
+
 bus = EventBus()

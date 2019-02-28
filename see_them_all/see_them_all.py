@@ -1,7 +1,7 @@
 from DaemonLite import DaemonLite
 from event_bus import EventBus
 from logging.handlers import RotatingFileHandler
-from util.constants import bus
+from util.constants import EB_NEW_SEEN_EP, bus
 from logger import Logger
 import logging
 import time
@@ -32,7 +32,7 @@ class SeeThemAll(DaemonLite):
                     klass = getattr(module, class_name)
                     output_ = klass(output_config)
                     for input_name in output_config.get('inputs'):
-                        bus.add_event(output_.mark_as_watched, 'new:seen:episodes:{0}'.format(input_name))
+                        bus.add_event(output_.mark_as_watched, '{0}:{1}'.format(EB_NEW_SEEN_EP, input_name))
                 except Exception as e:
                     print(e)
                     logging.warning('No output with path {0} found.'.format(type_))
