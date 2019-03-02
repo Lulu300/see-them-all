@@ -56,7 +56,7 @@ class Tvtime(Output):
         return r['access_token']
 
     def mark_as_watched(self, videos):
-        for video in videos:
+        for video in (v for v in videos if v.type_ == VideoType.EPISODE):
             self.follow(video.ids.tvdb_id, video.title)
             self.mark_episode_as_watched(video)
 
