@@ -45,8 +45,7 @@ class Plex(Input):
                 if not imdb_id:
                     continue
                 v = Video(
-                    video.get('grandparentTitle'), VideoType.MOVIE,
-                    video.get('parentIndex'), video.get('index'), imdb_id=imdb_id
+                    video.get('title'), VideoType.MOVIE, imdb_id=imdb_id
                 )
             videos.append(v)
         bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), videos)
@@ -61,6 +60,8 @@ class Plex(Input):
                         yield v
 
     def get_show_id(self, plex_show_url, agent):
+        if plex_show_url is None:
+            return False
         headers = {'X-Plex-Token': self.config.get('token')}
         show_info_url = urljoin(self.config.get('url'), plex_show_url)
         response = requests.get(show_info_url, headers=headers)
