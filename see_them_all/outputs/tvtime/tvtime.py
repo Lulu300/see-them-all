@@ -1,6 +1,6 @@
 from outputs import Output
 from event_bus import EventBus
-from util.constants import bus, TVTIME_BASEURL, TVTIME_CHECKIN, TVTIME_CLIENT_ID, TVTIME_CLIENT_SECRET, TVTIME_DEVICE_CODE, TVTIME_FOLLOW, TVTIME_TOKEN, TV_TIME_WAITING_TIME
+from util.constants import bus, TVTIME_BASEURL, TVTIME_CHECKIN, TVTIME_CLIENT_ID, TVTIME_CLIENT_SECRET, TVTIME_DEVICE_CODE, TVTIME_FOLLOW, TVTIME_TOKEN, TVTIME_WAITING_TIME
 from util.video import Video, VideoType
 import os
 import requests
@@ -115,5 +115,5 @@ class Tvtime(Output):
         if r.status_code is 200:
             return r.json()
         logging.info('Waiting 1 minute for new API slots.')
-        time.sleep(TV_TIME_WAITING_TIME)
+        time.sleep(TVTIME_WAITING_TIME)
         return self.request(url, method=method, data=data)
