@@ -47,6 +47,6 @@ class Discord(Input):
                             imdb_id=d.imdb_id, tmdb_id=d.tmdb_id,
                         ))
             bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), videos)
-            #await client.close()
+            await client.close()
 
         client.run(self.config.get("token"))

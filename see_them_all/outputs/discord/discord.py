@@ -42,7 +42,7 @@ class Discord(Output):
             channel = client.get_channel(id=int(self.config.get("channel")))
             for video in videos:
                 await self.send_channel(channel, video)
-            #await client.close()
+            await client.close()
 
         client.run(self.config.get("token"))
 
