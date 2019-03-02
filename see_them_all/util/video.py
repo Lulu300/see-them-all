@@ -18,10 +18,10 @@ class Video(object):
         self.ids = Video.Id(tvdb_id, tmdb_id, imdb_id)
 
     def __repr__(self):
-        return 'title: {0}, type_: {1}, season_number: {2}, episode_number: {3}, ids: [{4}]'.format(self.title, self.type_, self.season_number, self.episode_number, self.ids)
+        return 'title: {0}, type_: {1}, season_number: {2}, episode_number: {3}, ids: [{4}]'.format(self.title, self.type_.value, self.season_number, self.episode_number, self.ids)
 
     def __str__(self):
-        return 'title: {0}, type_: {1}, season_number: {2}, episode_number: {3}, ids: [{4}]'.format(self.title, self.type_, self.season_number, self.episode_number, self.ids)
+        return 'title: {0}, type_: {1}, season_number: {2}, episode_number: {3}, ids: [{4}]'.format(self.title, self.type_.value, self.season_number, self.episode_number, self.ids)
 
     class Id(object):
 
