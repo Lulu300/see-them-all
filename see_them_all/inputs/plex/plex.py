@@ -61,6 +61,7 @@ class Plex(Input):
 
     def get_show_id(self, plex_show_url, agent):
         if plex_show_url is None:
+            logging.warning('Cannot find video info, probably because you remove it or it\'s not sync with tvdb/imdb database')
             return False
         headers = {'X-Plex-Token': self.config.get('token')}
         show_info_url = urljoin(self.config.get('url'), plex_show_url)

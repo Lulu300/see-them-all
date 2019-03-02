@@ -7,6 +7,7 @@ import time
 import argparse
 import json
 import importlib
+import atexit
 
 
 class SeeThemAll(object):
@@ -27,15 +28,15 @@ class SeeThemAll(object):
             try:
                 module = __import__(module_name, fromlist=[class_name])
                 klass = getattr(module, class_name)
-                output_ = klass(output_config)
+                output_ = klass(output_name, output_config, self.config.get('cache_folder'))
                 try:
                     for input_name in output_config.get('inputs'):
                         bus.add_event(output_.mark_as_watched, '{0}:{1}'.format(EB_NEW_SEEN_EP, input_name))
+                    atexit.register(output_.write_cache_to_file)
                 except Exception as e:
                     logging.error(e)
             except Exception as e:
-                print(e)
-                logging.warning('No output with path {0} found.'.format(type_))
+                logging.warning(e)
 
     def setup_inputs(self):
         enabled_inputs = self.reduce_entries(self.config.get('inputs').items())

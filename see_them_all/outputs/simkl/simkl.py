@@ -12,8 +12,10 @@ import json
 
 class Simkl(Output):
 
-    def __init__(self, config):
+    def __init__(self, name, config, cache_folder):
+        self.name = name
         self.config = config
+        self.cache_folder = cache_folder
         self.token = self.get_token()
 
     def get_token(self):
@@ -115,3 +117,6 @@ class Simkl(Output):
         else:
             logging.debug('Successfully mark all your videos as watched')
         return True
+
+    def write_cache_to_file():
+        pass

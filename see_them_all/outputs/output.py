@@ -7,3 +7,7 @@ class Output(ABC):
     @abstractmethod
     def mark_as_watched(videos):
         pass
+
+    @abstractmethod
+    def write_cache_to_file():
+        pass
