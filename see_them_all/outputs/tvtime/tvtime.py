@@ -1,6 +1,6 @@
 from outputs import Output
 from event_bus import EventBus
-from util.constants import bus, TVTIME_BASEURL, TVTIME_CHECKIN, TVTIME_CLIENT_ID, TVTIME_CLIENT_SECRET, TVTIME_DEVICE_CODE, TVTIME_FOLLOW, TVTIME_TOKEN
+from util.constants import bus, TVTIME_BASEURL, TVTIME_CHECKIN, TVTIME_CLIENT_ID, TVTIME_CLIENT_SECRET, TVTIME_DEVICE_CODE, TVTIME_FOLLOW, TVTIME_TOKEN, TV_TIME_WAITING_TIME
 import os
 import requests
 import time
@@ -15,7 +15,6 @@ class Tvtime(Output):
 
     def get_token(self):
         token = ''
-        print(os.getcwd())
         if os.path.exists(self.config.get('token_file')):
             with open(self.config.get('token_file'), 'r') as f:
                 token = f.read()
@@ -64,11 +63,9 @@ class Tvtime(Output):
                 'access_token': self.token,
                 'show_id': episode.get('show_id'),
                 'season_number': episode.get('season_number'),
-                'number': episode.get('episode_number'),
-                'auto_follow': 1
+                'number': episode.get('episode_number')
             }
         )
-        print(r)
         if r['result'] == 'OK':
             logging.info(
                 'Mark as watched {0} season {1} episode {2}'
@@ -101,7 +98,7 @@ class Tvtime(Output):
             logging.warning(
                 'Cannot Follow {0} with message : {1}.'
                 .format(show_name, r['message'])
-        )
+            )
 
     def request(self, url, method='GET', data={}):
         r = requests.request(
@@ -112,5 +109,5 @@ class Tvtime(Output):
         if r.status_code is 200:
             return r.json()
         logging.info('Waiting 1 minute for new API slots.')
-        time.sleep(62)
+        time.sleep(TV_TIME_WAITING_TIME)
         return self.request(url, method=method, data=data)

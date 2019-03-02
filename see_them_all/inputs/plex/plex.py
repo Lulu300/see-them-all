@@ -1,19 +1,23 @@
 from inputs import Input
 from urllib.parse import urljoin
 from util.constants import PMS_WATCH_HISTORY, EB_NEW_SEEN_EP, bus
-from functools import lru_cache
+from joblib import Memory
 import requests
 import xml.etree.ElementTree as ET
 import time
 import re
 import logging
+import os
 
 
 class Plex(Input):
 
-    def __init__(self, name, config):
+    def __init__(self, name, config, cache_folder):
         self.name = name
         self.config = config
+        self.cache_folder = cache_folder
+        self.memory = Memory(os.path.join(self.cache_folder, name), bytes_limit=1000000)
+        self.get_show_id = self.memory.cache(self.get_show_id, ignore=['self'])
 
     def recently_watched(self):
         logging.debug('starting recently_watched for input {0}'.format(self.name))
@@ -39,11 +43,11 @@ class Plex(Input):
 
     def recently_watched_videos(self, watched_videos):
         yda = time.time() - 24 * 60 * 60
-        for v in (v for v in watched_videos if v.get('type') == 'episode'):
+        video_types = self.config.get('video_types')
+        for v in (v for v in watched_videos if v.get('type') in video_types):
             if int(v.get('viewedAt')) > yda or self.config.get('sync_all'):
                 yield v
 
-    @lru_cache(maxsize=32)
     def get_show_id(self, plex_show_url):
         headers = {'X-Plex-Token': self.config.get('token')}
         show_info_url = urljoin(self.config.get('url'), plex_show_url)

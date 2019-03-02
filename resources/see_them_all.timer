@@ -1,0 +1,10 @@
+[Unit]
+Description=See Them All Timer
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=12h
+Unit=see_them_all.service
+
+[Install]
+WantedBy=multi-user.target

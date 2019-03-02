@@ -1,0 +1,12 @@
+[Unit]
+Description=See Them All Service
+After=multi-user.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/see-them-all
+ExecStart=/usr/bin/python3 /opt/see-them-all/see_them_all/see_them_all.py
+PIDFile=/var/run/see_them_all.pid
+
+[Install]
+WantedBy=multi-user.target

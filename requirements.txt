@@ -1,2 +1,2 @@
-DaemonLite
 event-bus
+joblib
