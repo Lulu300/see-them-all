@@ -1,6 +1,7 @@
 from inputs import Input
 from urllib.parse import urljoin
 from util.constants import PMS_WATCH_HISTORY, EB_NEW_SEEN_EP, bus
+from util.video import Video, VideoType
 from joblib import Memory
 import requests
 import xml.etree.ElementTree as ET
@@ -33,13 +34,11 @@ class Plex(Input):
             show_id = self.get_show_id(video.get('grandparentKey'))
             if not show_id:
                 continue
-            episode = {
-                'show_id': show_id,
-                'show_name': video.get('grandparentTitle'),
-                'season_number': video.get('parentIndex'),
-                'episode_number': video.get('index')
-            }
-            bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), episode)
+            video = Video(
+                video.get('grandparentTitle'), VideoType.EPISODE,
+                video.get('parentIndex'),video.get('index'), tvdb_id=show_id
+            )
+            bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), video)
 
     def recently_watched_videos(self, watched_videos):
         yda = time.time() - 24 * 60 * 60

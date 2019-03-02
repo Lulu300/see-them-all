@@ -1,6 +1,7 @@
 from outputs import Output
 from event_bus import EventBus
 from util.constants import bus, TVTIME_BASEURL, TVTIME_CHECKIN, TVTIME_CLIENT_ID, TVTIME_CLIENT_SECRET, TVTIME_DEVICE_CODE, TVTIME_FOLLOW, TVTIME_TOKEN, TV_TIME_WAITING_TIME
+from util.video import Video, VideoType
 import os
 import requests
 import time
@@ -54,37 +55,9 @@ class Tvtime(Output):
             f.write(r['access_token'])
         return r['access_token']
 
-    def mark_as_watched(self, episode):
-        self.follow(episode.get('show_id'), episode.get('show_name'))
-        r = self.request(
-            method='POST',
-            url=TVTIME_CHECKIN,
-            data={
-                'access_token': self.token,
-                'show_id': episode.get('show_id'),
-                'season_number': episode.get('season_number'),
-                'number': episode.get('episode_number')
-            }
-        )
-        if r['result'] == 'OK':
-            logging.info(
-                'Mark as watched {0} season {1} episode {2}'
-                .format(
-                    episode.get('show_name'),
-                    episode.get('season_number'),
-                    episode.get('episode_number')
-                )
-            )
-        else:
-            logging.warning(
-                'Cannot mark as watched {0} season {1} episode {2} with message : {3}.'
-                .format(
-                    episode.get('show_name'),
-                    episode.get('season_number'),
-                    episode.get('episode_number'),
-                    r['message']
-                )
-            )
+    def mark_as_watched(self, video: Video):
+        self.follow(video.ids.tvdb_id, video.title)
+        self.mark_episode_as_watched(video)
 
     def follow(self, show_id, show_name):
         r = self.request(
@@ -94,11 +67,44 @@ class Tvtime(Output):
                   'show_id': show_id})
         if r['result'] == 'OK':
             logging.info('Follow {0}.'.format(show_name))
-        else:
-            logging.warning(
-                'Cannot Follow {0} with message : {1}.'
-                .format(show_name, r['message'])
+            return True
+        logging.warning(
+            'Cannot Follow {0} with message : {1}.'
+            .format(show_name, r['message'])
+        )
+        return False
+
+    def mark_episode_as_watched(self, video):
+        r = self.request(
+            method='POST',
+            url=TVTIME_CHECKIN,
+            data={
+                'access_token': self.token,
+                'show_id': video.ids.tvdb_id,
+                'season_number': video.season_number,
+                'number': video.episode_number
+            }
+        )
+        if r['result'] == 'OK':
+            logging.info(
+                'Mark as watched {0} season {1} episode {2}'
+                .format(
+                    video.title,
+                    video.season_number,
+                    video.episode_number
+                )
             )
+            return True
+        logging.warning(
+            'Cannot mark as watched {0} season {1} episode {2} with message : {3}.'
+            .format(
+                video.title,
+                video.season_number,
+                video.episode_number,
+                r['message']
+            )
+        )
+        return False
 
     def request(self, url, method='GET', data={}):
         r = requests.request(
