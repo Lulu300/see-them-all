@@ -52,7 +52,7 @@ class SeeThemAll(object):
                 except Exception as e:
                     logging.error(e)
             except Exception as e:
-                logging.warning('No input with path {0} found.'.format(type_))
+                logging.warning(e)
 
     def reduce_entries(self, entries):
         for entry_name, entry in entries:

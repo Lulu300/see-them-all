@@ -30,15 +30,26 @@ class Plex(Input):
         logging.debug('recently_watched for input {0} finished'.format(self.name))
 
     def parse_history(self, watched_videos):
+        videos = []
         for video in self.recently_watched_videos(watched_videos):
-            show_id = self.get_show_id(video.get('grandparentKey'))
-            if not show_id:
-                continue
-            video = Video(
-                video.get('grandparentTitle'), VideoType.EPISODE,
-                video.get('parentIndex'),video.get('index'), tvdb_id=show_id
-            )
-            bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), video)
+            if video.get('type') == 'episode':
+                tvdb_id = self.get_show_id(video.get('grandparentKey'), 'thetvdb')
+                if not tvdb_id:
+                    continue
+                v = Video(
+                    video.get('grandparentTitle'), VideoType.EPISODE,
+                    video.get('parentIndex'), video.get('index'), tvdb_id=tvdb_id
+                )
+            if video.get('type') == 'movie':
+                imdb_id = self.get_show_id(video.get('key'), 'imdb')
+                if not imdb_id:
+                    continue
+                v = Video(
+                    video.get('grandparentTitle'), VideoType.MOVIE,
+                    video.get('parentIndex'), video.get('index'), imdb_id=imdb_id
+                )
+            videos.append(v)
+        bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), videos)
 
     def recently_watched_videos(self, watched_videos):
         yda = time.time() - 24 * 60 * 60
@@ -49,12 +60,15 @@ class Plex(Input):
                     if user.get('title') in self.config.get('users'):
                         yield v
 
-    def get_show_id(self, plex_show_url):
+    def get_show_id(self, plex_show_url, agent):
         headers = {'X-Plex-Token': self.config.get('token')}
         show_info_url = urljoin(self.config.get('url'), plex_show_url)
         response = requests.get(show_info_url, headers=headers)
         tree = ET.fromstring(response.text)
-        regex = r'com\.plexapp\.agents\.thetvdb:\/\/([^?]*)'
-        content = tree.find('./Directory').get('guid')
+        regex = r'com\.plexapp\.agents\.{0}:\/\/([^?]*)'.format(agent)
+        if agent == 'thetvdb':
+            content = tree.find('./Directory').get('guid')
+        else:
+            content = tree.find('./Video').get('guid')
         matches = re.findall(regex, content, re.MULTILINE)
         return matches[0] if len(matches) is 1 else False

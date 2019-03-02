@@ -1,13 +1,14 @@
 from outputs import Output
 from event_bus import EventBus
+from urllib.parse import urljoin
 from util.constants import bus, SIMKL_BASEURL, SIMKL_CHECKIN, SIMKL_DEVICE_CODE, TVTIME_WAITING_TIME
 from util.video import Video, VideoType
+from requests import request
 import os
-import requests
 import time
 import logging
-from urllib.parse import urljoin
 import json
+
 
 class Simkl(Output):
 
@@ -23,11 +24,11 @@ class Simkl(Output):
         return token if len(token) > 1 else self.auth()
 
     def auth(self):
-        device = self.request(
+        device = request(
             method='GET',
             url=SIMKL_DEVICE_CODE,
             params={'client_id': self.config.get('client_id')}
-        )
+        ).json()
 
         r = {}
         r['result'] = 'KO'
@@ -44,76 +45,73 @@ class Simkl(Output):
         print('[SIMKL] {0}'.format(device['user_code']))
         print('[SIMKL] Waiting for you to type in the code in SIMKL.')
         while r['result'] != 'OK':
-            r = self.request(
+            r = request(
                     method='GET',
                     url=urljoin(SIMKL_DEVICE_CODE+'/', '{0}'.format(device['user_code'])),
-                    params={'client_id': self.config.get('client_id')})
+                    params={'client_id': self.config.get('client_id')}).json()
             time.sleep(device['interval'])
         print('[SIMKL] Your account has been linked.')
         with open(self.config.get('token_file'), 'w+') as f:
             f.write(r['access_token'])
         return r['access_token']
 
-    def mark_as_watched(self, video: Video):
-        if video.type_ == VideoType.EPISODE:
-            self.mark_episode_as_watched(video)
-        if video.type_ == VideoType.MOVIE:
-            self.mark_movie_as_watched(video)
+    def mark_as_watched(self, videos):
+        videos_watched = {
+            'shows': list(),
+            'movies': list()
+        }
+        shows = dict()
+        for video in videos:
+            if video.type_ == VideoType.EPISODE:
+                existing_show = shows.get(video.ids.tvdb_id, None)
+                if existing_show is None:
+                    existing_show = dict()
+                existing_season = existing_show.get(video.season_number, None)
+                if existing_season is None:
+                    existing_season = list()
+                existing_season.append({'number': video.episode_number})
+                existing_show[video.season_number] = existing_season
+                shows[video.ids.tvdb_id] = existing_show
+            if video.type_ == VideoType.MOVIE:
+                movie = {
+                    'ids': {
+                        'imdb': video.ids.imdb_id
+                    }
+                }
+                videos_watched['movies'].append(movie)
+        for show_id, show in shows.items():
+            videos = {
+                'ids': {
+                    'tvdb': show_id
+                },
+                'seasons': list()
+            }
+            for season_number, episodes in show.items():
+                videos['seasons'].append({
+                    'number': season_number,
+                    'episodes': episodes
+                })
+            videos_watched['shows'].append(videos)
+        self.mark_videos_as_watched(videos_watched)     
 
-    def mark_episode_as_watched(self, video):
-        r = self.request(
+    def mark_videos_as_watched(self, videos):
+        r = request(
             method='POST',
             url=SIMKL_CHECKIN,
             headers={
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+self.token,
+                'Authorization': 'Bearer {0}'.format(self.token),
                 'simkl-api-key': self.config.get('client_id'),
             },
-            data=json.dumps({
-                'shows': [{
-                    'ids': {
-                        'tvdb': int(video.ids.tvdb_id),
-                    },
-                    'seasons': [{
-                        "number": int(video.season_number),
-                        "episodes": [{
-                            "number": int(video.episode_number),
-                        }]
-                    }]
-                }]
-            })
+            data=json.dumps(videos)
         )
-        return False
-
-    def mark_movie_as_watched(self, video):
-        r = self.request(
-            method='POST',
-            url=SIMKL_CHECKIN,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+self.token,
-                'simkl-api-key': self.config.get('client_id'),
-            },
-            data=json.dumps({
-                'movies': [{
-                    'ids': {
-                        'imdb': int(video.ids.imdb_id),
-                    },
-                }]
-            })
-        )
-        return False
-
-    def request(self, url, method='GET', data={}, params={}, headers={}):
-        r = requests.request(
-            method=method,
-            url=url,
-            data=data,
-            params=params,
-            headers=headers,
-        )
-        if r.status_code is 200 or r.status_code is 201:
-            return r.json()
-        logging.info('Waiting 1 minute for new API slots.')
-        time.sleep(TVTIME_WAITING_TIME)
-        return self.request(url, method=method, data=data)
+        if r.status_code < 200 or r.status_code > 399:
+            logging.error('Cannot mark as watch your videos with message {0}'.format(r.text))
+        r_json = r.json()
+        failed_shows = r_json.get('not_found').get('shows')
+        failed_movies = r_json.get('not_found').get('movies')
+        if len(failed_shows) + len(failed_movies) > 0:
+            logging.warning('Successfully mark all your videos as watched except for {0} videos'.format(len(failed_shows) + len(failed_movies)))
+        else:
+            logging.debug('Successfully mark all your videos as watched')
+        return True
