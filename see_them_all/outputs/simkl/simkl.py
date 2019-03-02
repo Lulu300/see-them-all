@@ -94,7 +94,7 @@ class Simkl(Output):
                     'episodes': episodes
                 })
             videos_watched['shows'].append(videos)
-        self.mark_videos_as_watched(videos_watched)     
+        self.mark_videos_as_watched(videos_watched)
 
     def mark_videos_as_watched(self, videos):
         r = request(
@@ -118,5 +118,5 @@ class Simkl(Output):
             logging.debug('Successfully mark all your videos as watched')
         return True
 
-    def write_cache_to_file():
+    def write_cache_to_file(self):
         pass
