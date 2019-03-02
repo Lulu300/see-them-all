@@ -106,11 +106,12 @@ class Tvtime(Output):
         )
         return False
 
-    def request(self, url, method='GET', data={}):
+    def request(self, url, method='GET', data={}, params={}):
         r = requests.request(
             method=method,
             url=url,
             data=data,
+            params=params,
         )
         if r.status_code is 200:
             return r.json()
