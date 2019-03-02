@@ -13,6 +13,7 @@
             "sync_all": false,
             "url": "",
             "token": "",
+            "users": [""],
             "video_types": ["episode"]
         }
     },

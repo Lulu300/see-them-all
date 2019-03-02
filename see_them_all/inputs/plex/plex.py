@@ -24,7 +24,7 @@ class Plex(Input):
         history_url = urljoin(self.config.get('url'), PMS_WATCH_HISTORY)
         headers = {'X-Plex-Token': self.config.get('token')}
         response = requests.get(history_url, headers=headers)
-        watched_videos = ET.fromstring(response.text).iter('Video')
+        watched_videos = ET.fromstring(response.text)
         self.parse_history(watched_videos)
         logging.debug('recently_watched for input {0} finished'.format(self.name))
 
@@ -46,7 +46,9 @@ class Plex(Input):
         video_types = self.config.get('video_types')
         for v in (v for v in watched_videos if v.get('type') in video_types):
             if int(v.get('viewedAt')) > yda or self.config.get('sync_all'):
-                yield v
+                for user in v.iterfind('User'):
+                    if user.get('title') in self.config.get('users'):
+                        yield v
 
     def get_show_id(self, plex_show_url):
         headers = {'X-Plex-Token': self.config.get('token')}
