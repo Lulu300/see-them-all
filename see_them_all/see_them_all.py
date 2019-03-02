@@ -34,6 +34,7 @@ class SeeThemAll(object):
                 except Exception as e:
                     logging.error(e)
             except Exception as e:
+                print(e)
                 logging.warning('No output with path {0} found.'.format(type_))
 
     def setup_inputs(self):

@@ -23,6 +23,13 @@
             "type": "outputs.tvtime.Tvtime",
             "inputs": ["plex_1"],
             "token_file": "tvt_token"
+        },
+        "simkl": {
+            "enabled": true,
+            "type": "outputs.simkl.Simkl",
+            "inputs": ["plex_1"],
+            "client_id": "",
+            "token_file": "simkl_token"
         }
     },
     "cache_folder": "/tmp/see_them_all"

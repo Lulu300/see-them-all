@@ -11,6 +11,10 @@ TVTIME_CHECKIN = urljoin(TVTIME_BASEURL, '/v1/checkin')
 TVTIME_FOLLOW = urljoin(TVTIME_BASEURL, '/v1/follow')
 TVTIME_WAITING_TIME = 62
 
+SIMKL_BASEURL = 'https://api.simkl.com'
+SIMKL_DEVICE_CODE = urljoin(SIMKL_BASEURL, '/oauth/pin')
+SIMKL_CHECKIN = urljoin(SIMKL_BASEURL, '/sync/history')
+
 PMS_WATCH_HISTORY = "/status/sessions/history/all"
 
 EB_NEW_SEEN_EP = 'new:seen:episodes'
