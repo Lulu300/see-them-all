@@ -9,6 +9,8 @@ import time
 import re
 import logging
 import os
+import time
+import json
 
 
 class Plex(Input):
@@ -37,16 +39,18 @@ class Plex(Input):
                 if not tvdb_id:
                     continue
                 v = Video(
-                    video.get('grandparentTitle'), VideoType.EPISODE,
-                    video.get('parentIndex'), video.get('index'), tvdb_id=tvdb_id
+                    video.get('grandparentTitle'), VideoType.EPISODE, Video.Id(int(tvdb_id)),
+                    video.get('parentIndex'), video.get('index'), int(video.get('viewedAt'))
                 )
             if video.get('type') == 'movie':
                 imdb_id = self.get_show_id(video.get('key'), 'imdb')
                 if not imdb_id:
                     continue
                 v = Video(
-                    video.get('title'), VideoType.MOVIE, imdb_id=imdb_id
+                    video.get('title'), VideoType.MOVIE,
+                    watched_at=int(video.get('viewedAt')), imdb_id=imdb_id
                 )
+            # watched_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(int(video.get('viewedAt'))))
             videos.append(v)
         bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), videos)
 

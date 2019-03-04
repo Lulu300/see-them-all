@@ -1,2 +1,4 @@
 event-bus
 joblib
+marshmallow
+marshmallow_enum

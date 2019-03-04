@@ -1,7 +1,7 @@
 from inputs import Input
 from urllib.parse import urljoin
 from util.constants import PMS_WATCH_HISTORY, EB_NEW_SEEN_EP, bus
-from util.video import Video, VideoType
+from util.video import Video, VideoType, VideoSchema
 from joblib import Memory
 import requests
 import xml.etree.ElementTree as ET
@@ -11,6 +11,7 @@ import logging
 import os
 import discord
 import json
+
 
 class Discord(Input):
 
@@ -30,11 +31,11 @@ class Discord(Input):
         @client.event
         async def on_ready():
             channel = client.get_channel(id=int(self.config.get("channel")))
-            list = await channel.history().flatten();
+            list = await channel.history().flatten()
             videos = []
             for message in list:
                 if message.content.startswith(self.prefix):
-                    d = self.VideoDescriptor(message.content[len(self.prefix):])
+                    d = VideoSchema.load(message.content[len(self.prefix):]).data
                     if d.type == 'episode':
                         videos.append(Video(
                             d.title, VideoType.EPISODE,
