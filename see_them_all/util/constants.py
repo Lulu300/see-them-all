@@ -14,6 +14,7 @@ TVTIME_WAITING_TIME = 62
 SIMKL_BASEURL = 'https://api.simkl.com'
 SIMKL_DEVICE_CODE = urljoin(SIMKL_BASEURL, '/oauth/pin')
 SIMKL_CHECKIN = urljoin(SIMKL_BASEURL, '/sync/history')
+SIMKL_RECOVER = urljoin(SIMKL_BASEURL, '/sync/all-items/?extended=full')
 
 PMS_WATCH_HISTORY = "/status/sessions/history/all"
 
