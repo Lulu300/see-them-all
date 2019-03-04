@@ -39,13 +39,13 @@ class Discord(Input):
                     if d.type == 'episode':
                         videos.append(Video(
                             d.title, VideoType.EPISODE,
-                            d.season, d.episode, tvdb_id=d.tvdb_id,
-                            imdb_id=d.imdb_id, tmdb_id=d.tmdb_id,
+                            Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id)
+                            d.season, d.episode
                         ))
                     elif d.type == 'movies':
                         videos.append(Video(
-                            d.title, VideoType.MOVIE, tvdb_id=d.tvdb_id,
-                            imdb_id=d.imdb_id, tmdb_id=d.tmdb_id,
+                            d.title, VideoType.MOVIE,
+                            Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id)
                         ))
             bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), videos)
             await client.close()

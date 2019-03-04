@@ -6,6 +6,7 @@ import discord
 import asyncio
 import json
 
+
 class Discord(Output):
 
     def __init__(self, name, config, cache_folder):
