@@ -14,7 +14,7 @@ class Discord(Output):
         self.config = config
 
     async def send_channel(self, channel, video):
-        video_json = json.dumps(VideoSchema.dump(video).data)
+        video_json = json.dumps(VideoSchema().dump(video).data)
         await channel.send('see-them-all[{0}]: {1}'.format(self.config.get("uid"), video_json))
 
     def mark_as_watched(self, videos):

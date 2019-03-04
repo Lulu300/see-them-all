@@ -35,14 +35,14 @@ class Discord(Input):
             videos = []
             for message in list:
                 if message.content.startswith(self.prefix):
-                    d = VideoSchema.load(message.content[len(self.prefix):]).data
-                    if d.type == 'episode':
+                    d = VideoSchema().load(message.content[len(self.prefix):]).data
+                    if d.type_ == VideoType.EPISODE:
                         videos.append(Video(
                             d.title, VideoType.EPISODE,
-                            Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id)
+                            Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id),
                             d.season, d.episode
                         ))
-                    elif d.type == 'movies':
+                    elif d.type_ == VideoType.MOVIE:
                         videos.append(Video(
                             d.title, VideoType.MOVIE,
                             Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id)

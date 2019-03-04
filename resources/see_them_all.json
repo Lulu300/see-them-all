@@ -15,6 +15,14 @@
             "token": "",
             "users": [""],
             "video_types": ["episode"]
+        },
+        "discord": {
+            "enabled": true,
+            "type": "inputs.discord.Discord",
+            "sync_all": false,
+            "channel": 0,
+            "uid": "",
+            "token": ""
         }
     },
     "outputs": {
@@ -35,7 +43,7 @@
             "enabled": true,
             "type": "outputs.discord.Discord",
             "inputs": ["plex_1"],
-            "channel": ,
+            "channel": 0,
             "uid": "",
             "token": ""
         }
