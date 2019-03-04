@@ -34,19 +34,21 @@ class Discord(Input):
             list = await channel.history().flatten()
             videos = []
             for message in list:
-                if message.content.startswith(self.prefix):
-                    d = VideoSchema().load(message.content[len(self.prefix):]).data
-                    if d.type_ == VideoType.EPISODE:
-                        videos.append(Video(
-                            d.title, VideoType.EPISODE,
-                            Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id),
-                            d.season, d.episode
-                        ))
-                    elif d.type_ == VideoType.MOVIE:
-                        videos.append(Video(
-                            d.title, VideoType.MOVIE,
-                            Video.Id(tvdb_id=d.tvdb_id, imdb_id=d.imdb_id, tmdb_id=d.tmdb_id)
-                        ))
+                if len(message.content) > 6:
+                    msg = message.content[3:len(message.content)-3]
+                    if msg.startswith(self.prefix):
+                        d = VideoSchema().load(json.loads(msg[len(self.prefix):])).data
+                        if d.type_ == VideoType.EPISODE:
+                            videos.append(Video(
+                                d.title, VideoType.EPISODE,
+                                Video.Id(tvdb_id=d.ids.tvdb_id, imdb_id=d.ids.imdb_id, tmdb_id=d.ids.tmdb_id),
+                                d.season, d.episode
+                            ))
+                        elif d.type_ == VideoType.MOVIE:
+                            videos.append(Video(
+                                d.title, VideoType.MOVIE,
+                                Video.Id(tvdb_id=d.ids.tvdb_id, imdb_id=d.ids.imdb_id, tmdb_id=d.ids.tmdb_id)
+                            ))
             bus.emit('{0}:{1}'.format(EB_NEW_SEEN_EP, self.name), videos)
             await client.close()
 
