@@ -15,6 +15,7 @@ SIMKL_BASEURL = 'https://api.simkl.com'
 SIMKL_DEVICE_CODE = urljoin(SIMKL_BASEURL, '/oauth/pin')
 SIMKL_CHECKIN = urljoin(SIMKL_BASEURL, '/sync/history')
 SIMKL_RECOVER = urljoin(SIMKL_BASEURL, '/sync/all-items/?extended=full')
+SIMKL_EPISODES = urljoin(SIMKL_BASEURL, '/tv/episodes/{0}')
 
 PMS_WATCH_HISTORY = "/status/sessions/history/all"
 
