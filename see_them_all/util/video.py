@@ -11,7 +11,7 @@ class VideoType(str, Enum):
 class IdSchema(Schema):
     tvdb_id = fields.Int(required=False, allow_none=True, default=None, missing=None)
     tmdb_id = fields.Int(required=False, allow_none=True, default=None, missing=None)
-    imdb_id = fields.Int(required=False, allow_none=True, default=None, missing=None)
+    imdb_id = fields.String(required=False, allow_none=True, default=None, missing=None)
 
     @post_load
     def make_Id(self, data):
