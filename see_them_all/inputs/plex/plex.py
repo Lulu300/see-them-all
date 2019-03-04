@@ -48,7 +48,8 @@ class Plex(Input):
                     continue
                 v = Video(
                     video.get('title'), VideoType.MOVIE,
-                    watched_at=int(video.get('viewedAt')), imdb_id=imdb_id
+                    watched_at=int(video.get('viewedAt')),
+                    Video.Id(imdb_id=int(imdb_id))
                 )
             # watched_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(int(video.get('viewedAt'))))
             videos.append(v)
