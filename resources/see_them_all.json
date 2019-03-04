@@ -30,6 +30,14 @@
             "inputs": ["plex_1"],
             "client_id": "",
             "token_file": "simkl_token"
+        },
+        "discord": {
+            "enabled": true,
+            "type": "outputs.discord.Discord",
+            "inputs": ["plex_1"],
+            "channel": ,
+            "uid": "",
+            "token": ""
         }
     },
     "cache_folder": "/tmp/see_them_all"
