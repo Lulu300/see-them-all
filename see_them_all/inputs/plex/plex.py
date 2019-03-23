@@ -60,9 +60,8 @@ class Plex(Input):
         video_types = self.config.get('video_types')
         for v in (v for v in watched_videos if v.get('type') in video_types):
             if int(v.get('viewedAt')) > yda or self.config.get('sync_all'):
-                for user in v.iterfind('User'):
-                    if user.get('title') in self.config.get('users'):
-                        yield v
+                if int(v.get('accountID')) in self.config.get('users'):
+                    yield v
 
     def get_show_id(self, plex_show_url, agent):
         if plex_show_url is None:
